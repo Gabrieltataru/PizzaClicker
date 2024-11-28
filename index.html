@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza Clicker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f3f4f6;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            margin: 20px 0;
+        }
+        #score {
+            font-size: 2em;
+            margin: 20px 0;
+            color: black;
+        }
+        #message {
+            font-size: 1.5em;
+            margin-top: 20px;
+            color: green;
+            display: none;
+        }
+
+        .pizza-button {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background-color: #f4a300; 
+            position: relative;
+            cursor: pointer;
+            border: 8px solid #d17a2c;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            background-image: radial-gradient(circle, #f4a300 0%, #e1a100 70%);
+        }
+
+        .topping {
+            position: absolute;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: growAndFade 0.5s ease-out;
+        }
+
+        @keyframes growAndFade {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        #policyModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #policyModal div {
+            background: #333;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 90%;
+            margin: 10px;
+        }
+
+        #policyModal button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #policyModal button:hover {
+            background-color: #45a049;
+        }
+
+        #acceptButton {
+            background-color: #007BFF;
+        }
+
+        #acceptButton:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="policyModal">
+        <div>
+            <h2>Politica de Confidențialitate</h2>
+            <p>Prin utilizarea acestui site, accepți politica noastră de confidențialitate. Detalii despre modul în care colectăm și utilizăm informațiile tale pot fi găsite în politica completă.</p>
+            <button id="acceptButton">Acceptă</button>
+        </div>
+    </div>
+
+    <h1>Pizza Clicker</h1>
+    <div id="score">Clicuri: 0</div>
+
+    <div id="pizza" class="pizza-button">
+        <!-- Pizza este aici -->
+    </div>
+
+    <button id="buyTopping1" class="button" disabled>Cumpără Roșii (20 clicuri)</button>
+    <button id="buyTopping2" class="button" disabled>Cumpără Ciuperci (40 clicuri)</button>
+    <button id="buyTopping3" class="button" disabled>Cumpără Ardei (60 clicuri)</button>
+    <button id="buyTopping4" class="button" disabled>Cumpără Mozzarella (80 clicuri)</button>
+
+    <div id="message"></div>
+
+    <script>
+        let score = 0;
+        let totalToppings = 0;
+        let maxToppings = 30;
+        let hasClickedPizza = false; // Flag pentru a verifica dacă utilizatorul a apăsat pe pizza
+        let policyAccepted = false; // Verifică dacă politica a fost acceptată
+
+        const scoreDisplay = document.getElementById('score');
+        const pizzaButton = document.getElementById('pizza');
+        const message = document.getElementById('message');
+        const policyModal = document.getElementById('policyModal');
+        const acceptButton = document.getElementById('acceptButton');
+
+        // Închide popup-ul de politică când utilizatorul acceptă
+        acceptButton.addEventListener('click', () => {
+            policyAccepted = true;
+            policyModal.style.display = 'none'; // Ascunde politica
+            document.body.style.overflow = 'auto'; // Permite derularea paginii
+        });
+
+        function createTopping(color) {
+            const topping = document.createElement('div');
+            topping.classList.add('topping');
+            topping.style.backgroundColor = color;
+
+            const randomX = Math.random() * 100;
+            const randomY = Math.random() * 100;
+
+            topping.style.top = `${randomY}%`;
+            topping.style.left = `${randomX}%`;
+
+            return topping;
+        }
+
+        pizzaButton.addEventListener('click', () => {
+            if (!policyAccepted) return; // Verifică dacă politica a fost acceptată
+
+            score += 1;
+            scoreDisplay.textContent = `Clicuri: ${score}`;
+            checkIfCanBuyTopping();
+
+            if (!hasClickedPizza) {
+                message.textContent = "Apasă pe pizza pentru a câștiga puncte!";
+                message.style.display = "block";
+
+                setTimeout(() => {
+                    message.style.display = "none";
+                }, 2000);
+
+                hasClickedPizza = true;
+            }
+
+            pizzaButton.style.animation = 'shake 0.5s ease-in-out';
+            setTimeout(() => {
+                pizzaButton.style.animation = ''; 
+            }, 1500);
+        });
+
+        function checkIfCanBuyTopping() {
+            if (score >= 20) document.getElementById('buyTopping1').disabled = false;
+            if (score >= 40) document.getElementById('buyTopping2').disabled = false;
+            if (score >= 60) document.getElementById('buyTopping3').disabled = false;
+            if (score >= 80) document.getElementById('buyTopping4').disabled = false;
+        }
+
+        document.getElementById('buyTopping1').addEventListener('click', () => buyTopping('roșii', 20, '#ff6347'));
+        document.getElementById('buyTopping2').addEventListener('click', () => buyTopping('ciuperci', 40, '#8b4513'));
+        document.getElementById('buyTopping3').addEventListener('click', () => buyTopping('ardei', 60, '#90ee90'));
+        document.getElementById('buyTopping4').addEventListener('click', () => buyTopping('mozzarella', 80, '#ffffff'));
+
+        function buyTopping(toppingName, cost, color) {
+            if (score < cost) return;
+            if (totalToppings >= maxToppings) {
+                message.textContent = "Ai completat toată pizza!";
+                message.style.display = "block";
+                return;
+            }
+
+            score -= cost;
+            totalToppings += 1;
+            const topping = createTopping(color);
+            pizzaButton.appendChild(topping);
+
+            scoreDisplay.textContent = `Clicuri: ${score}`;
+            checkIfCanBuyTopping();
+
+            if (totalToppings >= maxToppings) {
+                message.textContent = "Pizza este aproape completă!";
+                message.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>
