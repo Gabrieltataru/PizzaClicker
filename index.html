@@ -43,11 +43,9 @@
       overflow: hidden;
       background-image: radial-gradient(circle, #f4a300 0%, #e1a100 70%);
       outline: none;
-      user-select: none;
     }
     .pizza-button:focus {
       outline: none;
-      box-shadow: none;
     }
     .topping {
       position: absolute;
@@ -106,19 +104,13 @@
     #policyModal button {
       padding: 10px 20px;
       margin-top: 10px;
-      background-color: #4CAF50;
+      background-color: #007BFF;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
     #policyModal button:hover {
-      background-color: #45a049;
-    }
-    #acceptButton {
-      background-color: #007BFF;
-    }
-    #acceptButton:hover {
       background-color: #0056b3;
     }
     #gameOver {
@@ -136,9 +128,8 @@
       border-radius: 5px;
       cursor: pointer;
     }
-    .button:disabled {
-      background-color: #a0c4ff;
-      cursor: not-allowed;
+    .button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
@@ -167,7 +158,7 @@
   <script>
     let score = 0;
     let totalToppings = 0;
-    let hasClickedPizza = false;
+    let hasShownMessage = false;
     let policyAccepted = false;
     let bacteriaOnPizza = 0;
     const maxToppings = 30;
@@ -198,14 +189,14 @@
       scoreDisplay.textContent = `Clicuri: ${score}`;
       checkIfCanBuyTopping();
 
-      if (!hasClickedPizza) {
+      if (totalToppings >= 3 && !hasShownMessage) {
         message.textContent = "Apasă pe bacterii ca să le elimini!";
         message.style.display = "block";
         setTimeout(() => message.style.display = "none", 3000);
-        hasClickedPizza = true;
+        hasShownMessage = true;
       }
 
-      if (score % 15 === 0 && totalToppings >= 3) {
+      if (totalToppings >= 3 && score % 15 === 0) {
         spawnBacteria();
       }
     });
@@ -252,12 +243,6 @@
       pizzaButton.style.pointerEvents = 'none';
     }
 
-    function showBacteriaMessage() {
-      message.textContent = "Apasă pe bacterii ca să le elimini!";
-      message.style.display = "block";
-      setTimeout(() => message.style.display = "none", 3000);
-    }
-
     document.getElementById('buyTopping1').addEventListener('click', () => buyTopping(20, '#ff6347'));
     document.getElementById('buyTopping2').addEventListener('click', () => buyTopping(40, '#8b4513'));
     document.getElementById('buyTopping3').addEventListener('click', () => buyTopping(60, '#90ee90'));
@@ -272,10 +257,6 @@
       pizzaButton.appendChild(topping);
       scoreDisplay.textContent = `Clicuri: ${score}`;
       checkIfCanBuyTopping();
-
-      if (totalToppings === 3) {
-        showBacteriaMessage();
-      }
     }
   </script>
 </body>
